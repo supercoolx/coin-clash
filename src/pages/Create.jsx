@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getAnchorProgram } from "../core/constants/anchor";
-import { useWallet, useConnection } from '@solana/wallet-adapter-react'
+import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react'
 import { PublicKey, Keypair, SystemProgram, SYSVAR_RENT_PUBKEY } from "@solana/web3.js";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -14,12 +14,11 @@ const Create = () => {
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [tokenUri, setTokenUri] = useState("");
   const { connection } = useConnection()
-  const { publicKey : wallet } = useWallet()
+  const wallet = useAnchorWallet()
   const createToken = async () => {
     if (!tokenName || !tokenSymbol || !tokenUri || !wallet || !connection) return;
-    const payer = wallet;
+    const payer = wallet.publicKey;
     const program = getAnchorProgram(connection, wallet, {commitment: 'confirmed'});
-    console.log('-----program:', program)
     const tokenMintKP = Keypair.generate()
 
     const [bondingCurve] = PublicKey.findProgramAddressSync(
@@ -54,7 +53,6 @@ const Create = () => {
       ],
       metaplexProgramId,
     )
-    console.log('payer:', payer.toBase58())
 
     const hash = await program.methods.createToken({
       name: Buffer.from(tokenName),
