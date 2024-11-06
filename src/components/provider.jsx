@@ -12,6 +12,8 @@ import {
 } from "@solana/wallet-adapter-wallets";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import "@solana/wallet-adapter-react-ui/styles.css";
+import 'react-toastify/dist/ReactToastify.css'
+import { ToastContainer } from "react-toastify";
 
 export const Provider = ({
   children,
@@ -33,6 +35,7 @@ export const Provider = ({
           {children}
         </WalletModalProvider>
       </WalletProvider>
+      <ToastContainer position="top-right" autoClose={5000} closeOnClick={true} pauseOnHover={true} />
     </ConnectionProvider>
   )
 }

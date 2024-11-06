@@ -8,6 +8,7 @@ import {
   getAssociatedTokenAddressSync,
 } from '@solana/spl-token'
 import { FEE_ACCOUNT } from "../core/constants/address";
+import { toast } from "react-toastify";
 
 const Create = () => {
   const [tokenName, setTokenName] = useState("");
@@ -73,6 +74,7 @@ const Create = () => {
       rent: SYSVAR_RENT_PUBKEY,
       systemProgram: SystemProgram.programId
     }).signers([tokenMintKP]).rpc();
+    toast.success(`Created ${tokenName} token Successfully!`)
   }
   return (
     <div className="container flex flex-col items-center px-4 pb-24 mx-auto">
