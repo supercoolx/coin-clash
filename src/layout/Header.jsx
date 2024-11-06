@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  useWalletModal
+} from "@solana/wallet-adapter-react-ui";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { shortenAddress } from "../utils";
 
 const Header = () => {
   const [modalOpened, setModalOpened] = useState(false);
   const [menuOpened, setMenuOpened] = useState(false);
+  const { setVisible } = useWalletModal();
+  const { connected, publicKey, disconnect } = useWallet();
 
   return (
     <header className="overflow-hidden">
@@ -34,7 +41,12 @@ const Header = () => {
               <button className="">Support</button>
             </div>
           </div>
-          <button className="h-8 text-sm font-bold text-black transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white w-60">Connect wallet</button>
+          <button
+            className="h-8 text-sm font-bold text-black transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white w-60"
+            onClick={()=>{connected?disconnect():setVisible(true)}}
+          >{
+            connected?shortenAddress(publicKey.toBase58()):"Connect wallet"
+          }</button>
         </div>
         <img onClick={() => setMenuOpened(prev => !prev)} src="/imgs/menu.svg" alt="" className="relative z-20 block w-8 h-8 cursor-pointer lg:hidden" />
       </div>

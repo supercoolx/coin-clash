@@ -44,7 +44,7 @@ const Home = () => {
           </div>
         </div>
         <div className="grid grid-cols-1 gap-3 mt-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {new Array(10).fill(0).map((_, key) => <Link to="/trade" key={key} className="p-3 pr-6 transition-all duration-200 cursor-pointer bg-dark-gray rounded-3xl hover:bg-slate-700">
+          {new Array(10).fill(0).map((_, key) => <Link to="/trade/4fi47qi2ZHzKdxYxFeQaMnSG1BuKtLMCFG4iYRgG97g9" key={key} className="p-3 pr-6 transition-all duration-200 cursor-pointer bg-dark-gray rounded-3xl hover:bg-slate-700">
             <div className="flex gap-4">
               <img src="/imgs/logo.webp" alt="" className="w-20 h-20 rounded-full" />
               <div className="">
