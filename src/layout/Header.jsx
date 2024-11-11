@@ -29,7 +29,10 @@ const Header = () => {
         </marquee>
       </div>
       <div className="container flex justify-between gap-10 px-4 py-4 mx-auto sm:flex-row">
-        <Link to="/" className="text-3xl font-bold">CoinClash<span className="text-primary">.fun</span></Link>
+        <Link to="/" className="flex items-center gap-2">
+        <img src="/imgs/lightning.webp" alt="" className="transition-all duration-300 rotate-180 hover:rotate-0" />
+        <div className="text-3xl font-bold">CoinClash<span className="text-primary">.fun</span></div>
+        </Link>
         <div className="items-center justify-between flex-1 hidden lg:flex">
           <div className="flex items-center flex-1 gap-10">
             <div className="flex items-center gap-2">
@@ -63,13 +66,15 @@ const Header = () => {
         <button className="h-8 text-sm font-bold text-black transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white w-60">Connect wallet</button>
       </div>
 
-      <div onClick={() => setModalOpened(false)} className={`fixed z-10 inset-0 bg-black/50 items-center justify-center px-5 ${modalOpened ? 'flex' : 'hidden'}`}>
-        <div onClick={e => e.stopPropagation()} className="border-2 border-white rounded-2xl w-[480px] h-[560px] font-bold flex flex-col items-center justify-between bg-slate-700 text-center py-5 px-5">
-          <div className="">
+      <div onClick={() => setModalOpened(prev => !prev)} className={`fixed inset-0 bg-black/50 flex items-center justify-center px-5 transition-all duration-500 ${modalOpened ? 'z-10 opacity-100' : '-z-10 opacity-0'}`}>
+        <div onClick={e => e.stopPropagation()} className={`border-2 border-white rounded-3xl w-[740px] h-[640px] font-semibold flex flex-col items-center justify-between bg-[#1b1d28] text-center py-5 px-5 text-xl transition-all duration-500`}>
+          <div className="space-y-5">
             <h1 className="text-3xl">How it works</h1>
-            <p className="mt-5">All token created on CoinClash are safe from rugpulls.</p>
-            <p className="">Each token is a faire launch with no presale and no team allocation.</p>
-            <p className="">Only the top 10 tokens will be launched. All liquidity from all other tokens will be added to the top 10 to give them a kickstart at launch.</p>
+            <p className="">All token created on CoinKick are a <span className="text-primary">fair launch</span>, making all tokens created <span className="text-primary">safe from rugpulls.</span></p>
+            <p className="">When the Kick timer ends, <span className="text-primary">only the top 10 tokens</span> will be launched. All liquidity from all other tokens will be added to the top 10 to give them a kickstart at launch.</p>
+            <p className="">100% of the SOL raised + the SOL raised of the losing tokens will be added as liquidity. Therefore the launch price is always higher than the last price before the Kick timer.</p>
+            <p className="">The prices of the tokens will increase exponentially during the sale giving the early investors a huge return at launch.</p>
+            <p className="">You can sell your tokens with Raydium after launch.</p>
           </div>
           <div onClick={() => setModalOpened(false)} className="text-xl cursor-pointer">Got it</div>
         </div>
