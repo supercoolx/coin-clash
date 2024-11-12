@@ -51,7 +51,7 @@ const Header = () => {
             connected?shortenAddress(publicKey.toBase58()):"Connect wallet"
           }</button>
         </div>
-        <img onClick={() => setMenuOpened(prev => !prev)} src="/imgs/menu.svg" alt="" className="relative z-20 block w-8 h-8 cursor-pointer lg:hidden z-[100]" />
+        <img onClick={() => setMenuOpened(prev => !prev)} src="/imgs/menu.svg" alt="" className="relative block w-8 h-8 cursor-pointer lg:hidden z-[100]" />
       </div>
 
       <div className={`fixed top-0 left-0 flex lg:hidden flex-col items-center justify-center w-screen h-screen gap-20 bg-black/90 z-[99] transition-all duration-300 ${ menuOpened ? 'translate-x-0' : '-translate-x-full' }`}>
@@ -63,7 +63,10 @@ const Header = () => {
           <img src="/imgs/x.webp" alt="" className="w-10 h-10 rounded-full" />
           <img src="/imgs/telegram.webp" alt="" className="w-10 h-10 rounded-full" />
         </div>
-        <button className="h-8 text-sm font-bold text-black transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white w-60">Connect wallet</button>
+        <button 
+          className="h-8 text-sm font-bold text-black transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white w-60"
+          onClick={()=>{connected?disconnect():setVisible(true)}}
+        >{connected?shortenAddress(publicKey.toBase58()):"Connect wallet"}</button>
       </div>
 
       <div onClick={() => setModalOpened(prev => !prev)} className={`fixed inset-0 bg-black/50 flex items-center justify-center px-5 transition-all duration-500 ${modalOpened ? 'z-10 opacity-100' : '-z-10 opacity-0'}`}>

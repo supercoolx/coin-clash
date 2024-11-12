@@ -11,9 +11,9 @@ import {
   TrustWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import { ToastContainer } from "react-toastify";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import 'react-toastify/dist/ReactToastify.css'
-import { ToastContainer } from "react-toastify";
 
 export const Provider = ({
   children,

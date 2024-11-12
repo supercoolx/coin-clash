@@ -12,9 +12,12 @@ import { getAnchorProgram } from "../core/constants/anchor";
 import { BN } from '@coral-xyz/anchor';
 import { numberWithCommas, calculateTokenAmount, MAX_SUPPLY } from '../utils/index';
 import { useBondingCurveTokenAmount } from "../hooks";
+
 import { BACKEND_URI } from "../core/constants";
 import axios from "axios";
 import { getMarketCap } from "../utils/index";
+import { toast } from 'react-toastify';
+
 
 const Trade = () => {
   const { connection } = useConnection()
@@ -103,7 +106,11 @@ const Trade = () => {
 
   const buyToken = async () => {
     const tokenMintPulicKey = new PublicKey(tokenMint);
-    if (!wallet || !connection || !tokenMintPulicKey) return;
+    if (!wallet || !connection) {
+      toast.error("Please connect wallet first!", {theme: "light"})
+      return
+    }
+    if (!tokenMintPulicKey) {return};
     const payer = wallet.publicKey;
     const feeRecipient = new PublicKey(FEE_ACCOUNT);
     const program = getAnchorProgram(connection, wallet, {commitment: 'confirmed'});

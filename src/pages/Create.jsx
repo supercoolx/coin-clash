@@ -40,7 +40,14 @@ const Create = () => {
 
 
   const createToken = async () => {
-    if (!tokenName || !tokenSymbol || !selectedFile || !wallet || !connection) return;
+    if (!wallet || !connection) {
+      toast.error("Please connect wallet first!")
+      return
+    }
+    if (!tokenName || !tokenSymbol || !selectedFile) {
+      toast.error("Please input the correct information!")
+      return
+    };
     let tokenUri = "";
     if (selectedFile) {
       try {
