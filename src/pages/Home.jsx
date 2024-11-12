@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Countdown from "react-countdown";
-
+import { BACKEND_URI } from "../core/constants";
+import axios from "axios";
 const Renderer = (props) => {
   return (
     <div className="flex justify-center gap-5">
@@ -24,6 +25,20 @@ const Renderer = (props) => {
 const Home = () => {
   const [date] = useState(Date.now() + 3 * 24 * 60 * 60 * 1000);
 
+  const [tokens, setTokens] = useState([]);
+  useEffect(()=> {
+    const fetchTokens = async ()=>{
+      try {
+      const apiURL = `${BACKEND_URI}/token/list`;
+      const res = await axios.get(apiURL);
+      setTokens(res.data);
+      } catch (e){
+        console.error(e);
+      }
+    }
+    fetchTokens();
+  }, [])
+
   return (
     <div className="container px-4 pb-24 mx-auto">
       <div className="flex flex-col items-center gap-10">
@@ -44,11 +59,11 @@ const Home = () => {
           </div>
         </div>
         <div className="grid grid-cols-1 gap-3 mt-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {new Array(10).fill(0).map((_, key) => <Link to="/trade/4fi47qi2ZHzKdxYxFeQaMnSG1BuKtLMCFG4iYRgG97g9" key={key} className="p-3 pr-6 transition-all duration-200 cursor-pointer bg-dark-gray rounded-3xl hover:bg-slate-700">
+          {tokens.map((token, key) => <Link to={`/trade/${token.mint}`} key={key} className="p-3 pr-6 transition-all duration-200 cursor-pointer bg-dark-gray rounded-3xl hover:bg-slate-700">
             <div className="flex gap-4">
-              <img src="/imgs/logo.webp" alt="" className="w-20 h-20 rounded-full" />
+              <img src={token.uri} alt="" className="w-20 h-20 rounded-full" />
               <div className="">
-                <div className="text-xl font-semibold">SuperDawhg <span className="text-primary">(#1)</span></div>
+                <div className="text-xl font-semibold">{token.name} <span className="text-primary">(#1)</span></div>
                 <div className="font-semibold text-neutral-600">The best dog on CoinClash</div>
               </div>
             </div>
