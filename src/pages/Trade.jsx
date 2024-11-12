@@ -12,21 +12,58 @@ import { getAnchorProgram } from "../core/constants/anchor";
 import { BN } from '@coral-xyz/anchor';
 import { numberWithCommas, calculateTokenAmount, MAX_SUPPLY } from '../utils/index';
 import { useBondingCurveTokenAmount } from "../hooks";
+
+import { BACKEND_URI } from "../core/constants";
+import axios from "axios";
+import { getMarketCap } from "../utils/index";
 import { toast } from 'react-toastify';
+
 
 const Trade = () => {
   const { connection } = useConnection()
   const wallet = useAnchorWallet()
-  const { tokenMint } = useParams();
+  const { tokenMint, rank } = useParams();
   const [inputSol, setInputSol] = useState('');
   const amountBondingCurve = useBondingCurveTokenAmount(tokenMint);
   const [outputToken, setOutputToken] = useState(0);
-  useEffect(()=> {
+
+  const [tokenInfo, setTokenInfo] = useState();
+  const [solPrice , setSolPrice] = useState(0);
+
+  useEffect(() => {
     const currentSupply = MAX_SUPPLY - (amountBondingCurve*1000000000);
     const feeSol = ((inputSol??0) * 1000000000)/100;
     setOutputToken(calculateTokenAmount(currentSupply, (inputSol??0)*1000000000 - feeSol,9))
   }, [inputSol, amountBondingCurve])
 
+  useEffect(() => {
+    const fetchSolPrice = async () => {
+      try {
+        const apiURL = "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
+        const res = await axios.get(apiURL);
+        if (res && res.data) {
+          const solPrice = res.data.solana.usd;
+          setSolPrice(solPrice);
+        }
+      }catch (e) {
+        console.error(e);
+      }
+    }
+    const fetchToken = async ()=>{
+      try {
+        if (!tokenMint) return;
+        const apiURL = `${BACKEND_URI}/tokens/${tokenMint}`;
+        const res = await axios.get(apiURL);
+        if (res && res.data) {
+          setTokenInfo(res.data);
+        }
+      } catch (e){
+        console.error(e);
+      }
+    }
+    fetchSolPrice();
+    fetchToken();
+  },[tokenMint])
 
   useEffect(() => {
     if (!window.TradingView) {
@@ -126,23 +163,23 @@ const Trade = () => {
       <div className="">
         <div className="p-4 pr-6 bg-dark-gray rounded-3xl">
           <div className="flex gap-4">
-            <img src="/imgs/logo.webp" alt="" className="w-16 h-16 rounded-full" />
+            <img src={tokenInfo?.uri} alt="" className="w-16 h-16 rounded-full" />
             <div className="">
-              <div className="text-lg font-semibold">SuperDawhg (SDOG)</div>
-              <div className="font-semibold text-neutral-500">The best dog on CoinClash</div>
+              <div className="text-lg font-semibold">{tokenInfo?tokenInfo.name:''} {tokenInfo?`(${tokenInfo.symbol})`:''}</div>
+              <div className="font-semibold text-neutral-500">{tokenInfo?tokenInfo.desc:''}</div>
             </div>
-            <div className="ml-8 font-bold text-primary">#1</div>
+            <div className="ml-8 font-bold text-primary">#{rank}</div>
           </div>
         </div>
         <div className="flex items-center justify-between px-4 py-2 mt-2 font-bold rounded-full bg-dark-gray">
-          <div className="text-primary">market cap: 2.15M</div>
+          <div className="text-primary">market cap: {tokenInfo?getMarketCap(tokenInfo.solAmount, tokenInfo.soldTokenAmount, solPrice):0}</div>
           <div className="flex items-center gap-1">
             <img src="/imgs/user.svg" alt="" className="w-4 h-4" />
             <span>12.508</span>
           </div>
         </div>
         <div className="p-5 mt-2 font-bold bg-dark-gray rounded-3xl">
-          <div className="text-neutral-500">{numberWithCommas(amountBondingCurve)} SDOG Remaining</div>
+          <div className="text-neutral-500">{numberWithCommas(amountBondingCurve)} {tokenInfo?tokenInfo.symbol:''} Remaining</div>
           <div className="flex gap-2 p-1 mt-2 border border-white rounded-xl">
             <div className="flex items-center flex-1 px-2">
               <input
@@ -176,7 +213,7 @@ const Trade = () => {
             >5SOL</button>
           </div>
           <div className="mt-5">
-            {numberWithCommas(outputToken/1000000000)} <span className="text-neutral-500">SDOG</span>
+            {numberWithCommas(outputToken/1000000000)} <span className="text-neutral-500">{tokenInfo?.symbol}</span>
           </div>
           <button
             className="flex items-center justify-center w-full h-8 mt-5 text-sm font-semibold text-black transition-all duration-300 rounded-lg bg-primary hover:bg-secondary hover:text-white"

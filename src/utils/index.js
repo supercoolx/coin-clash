@@ -19,7 +19,7 @@ export const getGlobalConnection = () => {
 }
 
 export const MAX_SUPPLY = 500_000_000_000_000_000;
-const K = 0.00000001;
+const K = 0.000000024;
 const INITIAL_PRICE = 5000;
 export const calculateTokenAmount = (currentSupply, lamportsAmount, decimals) => {
   const exponent = (K * currentSupply) / (10 ** decimals)
@@ -28,4 +28,18 @@ export const calculateTokenAmount = (currentSupply, lamportsAmount, decimals) =>
   const ln = Math.log(num + exp1)
   const tokenAmount = (ln * 10**decimals) / K - currentSupply
   return tokenAmount < 0 ? 0 : Math.floor(tokenAmount)
+}
+
+export const getMarketCap = (solAmount, soldTokenAmount, solPrice) => {
+  if (Number(soldTokenAmount) == 0 ){
+    return "0";
+  }
+  const marketCap = (Number(solAmount) * MAX_SUPPLY / Number(soldTokenAmount))/1000000000 * solPrice;
+  if (marketCap >= 1000000) {
+    return (marketCap / 1000000).toFixed(2) + "M";
+  }else if ( marketCap >= 1000) {
+    return (marketCap / 1000).toFixed(2) + "K";
+  }else{
+    return marketCap.toFixed(2);
+  }
 }

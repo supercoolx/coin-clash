@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Countdown from "react-countdown";
 import { BACKEND_URI } from "../core/constants";
 import axios from "axios";
+import { getMarketCap } from "../utils";
 const Renderer = (props) => {
   return (
     <div className="flex justify-center gap-5">
@@ -26,18 +27,34 @@ const Home = () => {
   const [date] = useState(Date.now() + 3 * 24 * 60 * 60 * 1000);
 
   const [tokens, setTokens] = useState([]);
+  const [solPrice , setSolPrice] = useState(0);
   useEffect(()=> {
-    const fetchTokens = async ()=>{
+    const fetchSolPrice = async () => {
       try {
-      const apiURL = `${BACKEND_URI}/token/list`;
-      const res = await axios.get(apiURL);
-      setTokens(res.data);
-      } catch (e){
+        const apiURL = "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
+        const res = await axios.get(apiURL);
+        if (res && res.data) {
+          const solPrice = res.data.solana.usd;
+          setSolPrice(solPrice);
+        }
+      }catch (e) {
         console.error(e);
       }
     }
+    const fetchTokens = async () => {
+      try {
+        const apiURL = `${BACKEND_URI}/tokens`;
+        const res = await axios.get(apiURL);
+        setTokens(res.data);
+
+      }catch (e) {
+        console.error(e);
+      }
+    }
+    fetchSolPrice();
     fetchTokens();
   }, [])
+
 
   return (
     <div className="container px-4 pb-24 mx-auto">
@@ -59,16 +76,18 @@ const Home = () => {
           </div>
         </div>
         <div className="grid grid-cols-1 gap-3 mt-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {tokens.map((token, key) => <Link to={`/trade/${token.mint}`} key={key} className="p-3 pr-6 transition-all duration-200 cursor-pointer bg-dark-gray rounded-3xl hover:bg-slate-700">
+          {tokens.sort(
+            (a,b)=> Number(b.solAmount) - Number(a.solAmount)
+          ).map((token, index) => <Link to={`/trade/${token.mint}/${index + 1}`} key={index} className="p-3 pr-6 transition-all duration-200 cursor-pointer bg-dark-gray rounded-3xl hover:bg-slate-700">
             <div className="flex gap-4">
               <img src={token.uri} alt="" className="w-20 h-20 rounded-full" />
               <div className="">
-                <div className="text-xl font-semibold">{token.name} <span className="text-primary">(#1)</span></div>
-                <div className="font-semibold text-neutral-600">The best dog on CoinClash</div>
+                <div className="text-xl font-semibold">{token.name} <span className="text-primary">(#{index + 1})</span></div>
+                <div className="font-semibold text-neutral-600">{token.desc}</div>
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <div className="font-semibold text-primary">market cap: 2.15M</div>
+              <div className="font-semibold text-primary">market cap: {getMarketCap(token.solAmount, token.soldTokenAmount, solPrice)}</div>
               <div className="flex items-center gap-2">
                 <img src="/imgs/user.svg" alt="" className="w-4 h-4" />
                 <div className="font-bold">12.508</div>

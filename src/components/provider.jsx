@@ -35,7 +35,12 @@ export const Provider = ({
           {children}
         </WalletModalProvider>
       </WalletProvider>
-      <ToastContainer position="top-right" autoClose={5000} closeOnClick={true} pauseOnHover={true} />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        closeOnClick={true}
+        pauseOnHover={true}
+      />
     </ConnectionProvider>
   )
 }
