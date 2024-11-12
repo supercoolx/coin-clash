@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { getAnchorProgram } from "../core/constants/anchor";
 import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react'
 import { PublicKey, Keypair, SystemProgram, SYSVAR_RENT_PUBKEY } from "@solana/web3.js";
@@ -9,15 +9,67 @@ import {
 } from '@solana/spl-token'
 import { FEE_ACCOUNT } from "../core/constants/address";
 import { toast } from "react-toastify";
+import { BACKEND_URI } from "../core/constants";
 
 const Create = () => {
+  const { connection } = useConnection();
+  const wallet = useAnchorWallet();
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
-  const [tokenUri, setTokenUri] = useState("");
-  const { connection } = useConnection()
-  const wallet = useAnchorWallet()
+  const [tokenDesc, setTokenDesc] = useState("");
+  const fileInputRef = useRef(null)
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [imageDataUrl, setImageDataUrl] = useState("");
+
+  // const { mutateAsync: uploadToPinataAsync, isPending: isUploading } =
+  //   useUploadPinata()
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setSelectedFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const imageDataUrl = reader.result
+        setImageDataUrl(imageDataUrl);
+
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+
   const createToken = async () => {
-    if (!tokenName || !tokenSymbol || !tokenUri || !wallet || !connection) return;
+    if (!tokenName || !tokenSymbol || !selectedFile || !wallet || !connection) return;
+    let tokenUri = "";
+    if (selectedFile) {
+      try {
+        // Upload image to IPFS using Pinata
+        const data = new FormData()
+        data.append('file', selectedFile)
+        data.append('tokenName', tokenName)
+        data.append('tokenSymbol', tokenSymbol)
+        data.append('tokenDesc', tokenDesc)
+        const res = await fetch(
+          `${BACKEND_URI}/tokens/ipfs`,
+          {
+            method: 'POST',
+            body: data,
+          }
+        );
+        const resInfo = await res.json();
+        if (!resInfo.ok) {
+          toast.error('Failed to upload image to IPFS');
+          return;
+        }
+        tokenUri = resInfo.uri;
+      } catch (error) {
+        console.error('Error uploading to IPFS:', error)
+        toast.error('Failed to upload image to IPFS')
+        return;
+      }
+    }
+
     const payer = wallet.publicKey;
     const program = getAnchorProgram(connection, wallet, {commitment: 'confirmed'});
     const tokenMintKP = Keypair.generate()
@@ -97,22 +149,44 @@ const Create = () => {
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="desc" className="font-bold">Description</label>
-          <input type="text" name="name" id="desc" className="w-full px-2 py-2 border border-white rounded-lg outline-none bg-slate-800" />
+          <textarea id="desc" rows="4" className="w-full px-2 py-2 border border-white rounded-lg outline-none bg-slate-800"
+            value={tokenDesc}
+            onChange={(e) => setTokenDesc(e.target.value)}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="thumbnail" className="font-bold">Image or Video</label>
-          <input
-            type="text" name="name" id="thumbnail" className="w-full px-2 py-2 border border-white rounded-lg outline-none bg-slate-800"
-            value={tokenUri}
-            onChange={(e) => setTokenUri(e.target.value)}
-          />
+            <div
+              className="relative min-h-[300px] w-full cursor-pointer bg-cover bg-no-repeat md:w-1/2"
+              onClick={() => fileInputRef.current?.click()}
+            >
+            {imageDataUrl ? (
+              <img
+                src={imageDataUrl}
+                alt="Uploaded token image"
+                className="absolute left-1/2 top-1/2 max-h-full max-w-full -translate-x-1/2 -translate-y-1/2 object-contain"
+              />
+            ) : (
+              <img
+                src="/imgs/icon-file-upload.svg"
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+              />
+            )}
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={handleImageUpload}
+            />
+          </div>
         </div>
         <div className="p-4 pr-6 bg-dark-gray rounded-3xl">
           <div className="flex gap-4">
-            <img src="/imgs/logo.webp" alt="" className="w-16 h-16 rounded-full" />
+            <img src={imageDataUrl?imageDataUrl:"/imgs/logo.webp"} alt="" className="w-16 h-16 rounded-full" />
             <div className="">
-              <div className="text-lg font-semibold">SuperDawhg</div>
-              <div className="font-semibold text-neutral-500">The best dog on CoinClash</div>
+              <div className="text-lg font-semibold">{tokenName}</div>
+              <div className="font-semibold text-neutral-500">{tokenDesc}</div>
             </div>
           </div>
         </div>
