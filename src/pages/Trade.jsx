@@ -163,7 +163,7 @@ const Trade = () => {
       <div className="">
         <div className="p-4 pr-6 bg-dark-gray rounded-3xl">
           <div className="flex gap-4">
-            <img src={tokenInfo?.uri} alt="" className="w-16 h-16 rounded-full" />
+            <img src={tokenInfo?.imageUri} alt="" className="w-16 h-16 rounded-full" />
             <div className="">
               <div className="text-lg font-semibold">{tokenInfo?tokenInfo.name:''} {tokenInfo?`(${tokenInfo.symbol})`:''}</div>
               <div className="font-semibold text-neutral-500">{tokenInfo?tokenInfo.desc:''}</div>

@@ -80,7 +80,7 @@ const Home = () => {
             (a,b)=> Number(b.solAmount) - Number(a.solAmount)
           ).map((token, index) => <Link to={`/trade/${token.mint}/${index + 1}`} key={index} className="p-3 pr-6 transition-all duration-200 cursor-pointer bg-dark-gray rounded-3xl hover:bg-slate-700">
             <div className="flex gap-4">
-              <img src={token.uri} alt="" className="w-20 h-20 rounded-full" />
+              <img src={token?.imageUri} alt="" className="w-20 h-20 rounded-full" />
               <div className="">
                 <div className="text-xl font-semibold">{token.name} <span className="text-primary">(#{index + 1})</span></div>
                 <div className="font-semibold text-neutral-600">{token.desc}</div>
