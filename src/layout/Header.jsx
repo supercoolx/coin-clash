@@ -51,10 +51,10 @@ const Header = () => {
             connected?shortenAddress(publicKey.toBase58()):"Connect wallet"
           }</button>
         </div>
-        <img onClick={() => setMenuOpened(prev => !prev)} src="/imgs/menu.svg" alt="" className="relative z-20 block w-8 h-8 cursor-pointer lg:hidden" />
+        <img onClick={() => setMenuOpened(prev => !prev)} src="/imgs/menu.svg" alt="" className="relative z-20 block w-8 h-8 cursor-pointer lg:hidden z-[100]" />
       </div>
 
-      <div className={`fixed top-0 left-0 flex lg:hidden flex-col items-center justify-center w-screen h-screen gap-20 bg-black/90 transition-all duration-300 ${ menuOpened ? 'translate-x-0' : '-translate-x-full' }`}>
+      <div className={`fixed top-0 left-0 flex lg:hidden flex-col items-center justify-center w-screen h-screen gap-20 bg-black/90 z-[99] transition-all duration-300 ${ menuOpened ? 'translate-x-0' : '-translate-x-full' }`}>
         <div className="flex flex-col gap-5 text-2xl font-bold">
           <button onClick={() => setModalOpened(true)} className="">How it works</button>
           <button className="">Support</button>
