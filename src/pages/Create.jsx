@@ -9,14 +9,14 @@ import {
 } from '@solana/spl-token'
 import { FEE_ACCOUNT } from "../core/constants/address";
 import { toast } from "react-toastify";
-import { PINATA_API_KEY } from "../core/constants";
+import { BACKEND_URI } from "../core/constants";
 
 const Create = () => {
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
-  const [tokenUri, setTokenUri] = useState("");
+  const [tokenDesc, setTokenDesc] = useState("");
   const fileInputRef = useRef(null)
   const [selectedFile, setSelectedFile] = useState(null)
   const [imageDataUrl, setImageDataUrl] = useState("");
@@ -41,37 +41,34 @@ const Create = () => {
 
   const createToken = async () => {
     if (!tokenName || !tokenSymbol || !selectedFile || !wallet || !connection) return;
-    let imageUrl = "";
+    let tokenUri = "";
     if (selectedFile) {
       try {
         // Upload image to IPFS using Pinata
         const data = new FormData()
         data.append('file', selectedFile)
-
-        const upload = await fetch(
-          'https://api.pinata.cloud/pinning/pinFileToIPFS',
+        data.append('tokenName', tokenName)
+        data.append('tokenSymbol', tokenSymbol)
+        data.append('tokenDesc', tokenDesc)
+        const res = await fetch(
+          `${BACKEND_URI}/tokens/ipfs`,
           {
             method: 'POST',
-            headers: {
-              Authorization: `Bearer ${PINATA_API_KEY}`,
-            },
             body: data,
-          },
-        )
-        const res = (await upload.json());
-        if (!res.IpfsHash) {
-          toast.error('Failed to upload image to IPFS')
+          }
+        );
+        const resInfo = await res.json();
+        if (!resInfo.ok) {
+          toast.error('Failed to upload image to IPFS');
           return;
         }
-        imageUrl =  `https://gateway.pinata.cloud/ipfs/${res.IpfsHash}`
-        console.log(imageUrl)
+        tokenUri = resInfo.uri;
       } catch (error) {
         console.error('Error uploading to IPFS:', error)
         toast.error('Failed to upload image to IPFS')
-        return
+        return;
       }
     }
-
 
     const payer = wallet.publicKey;
     const program = getAnchorProgram(connection, wallet, {commitment: 'confirmed'});
@@ -113,7 +110,7 @@ const Create = () => {
     const hash = await program.methods.createToken({
       name: Buffer.from(tokenName),
       symbol: Buffer.from(tokenSymbol),
-      uri: Buffer.from(imageUrl)
+      uri: Buffer.from(tokenUri)
     }).accounts({
       payer,
       tokenMint: tokenMintKP.publicKey,
@@ -152,7 +149,10 @@ const Create = () => {
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="desc" className="font-bold">Description</label>
-          <input type="text" name="name" id="desc" className="w-full px-2 py-2 border border-white rounded-lg outline-none bg-slate-800" />
+          <textarea id="desc" rows="4" className="w-full px-2 py-2 border border-white rounded-lg outline-none bg-slate-800"
+            value={tokenDesc}
+            onChange={(e) => setTokenDesc(e.target.value)}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="thumbnail" className="font-bold">Image or Video</label>
@@ -183,10 +183,10 @@ const Create = () => {
         </div>
         <div className="p-4 pr-6 bg-dark-gray rounded-3xl">
           <div className="flex gap-4">
-            <img src="/imgs/logo.webp" alt="" className="w-16 h-16 rounded-full" />
+            <img src={imageDataUrl?imageDataUrl:"/imgs/logo.webp"} alt="" className="w-16 h-16 rounded-full" />
             <div className="">
-              <div className="text-lg font-semibold">SuperDawhg</div>
-              <div className="font-semibold text-neutral-500">The best dog on CoinClash</div>
+              <div className="text-lg font-semibold">{tokenName}</div>
+              <div className="font-semibold text-neutral-500">{tokenDesc}</div>
             </div>
           </div>
         </div>
