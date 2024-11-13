@@ -17,10 +17,8 @@ export default defineConfig(({ mode }) => {
       define:
         mode === 'development'
           ? {
-              rollupOptions: {
-                plugins: [inject({ Buffer: ['buffer', 'Buffer'] })],
-              },
-            }
-          : undefined,
+            global: {},
+          }
+        : undefined,
     };
 });
