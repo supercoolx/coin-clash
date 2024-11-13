@@ -148,6 +148,14 @@
           ]
         },
         {
+          "name": "liquidity",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "CHECK"
+          ]
+        },
+        {
           "name": "user",
           "isMut": true,
           "isSigner": true
@@ -212,6 +220,14 @@
         },
         {
           "name": "feeAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "CHECK"
+          ]
+        },
+        {
+          "name": "liquidity",
           "isMut": true,
           "isSigner": false,
           "docs": [

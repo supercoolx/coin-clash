@@ -7,7 +7,7 @@ import {
   TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
 } from '@solana/spl-token'
-import { FEE_ACCOUNT } from "../core/constants/address";
+import { FEE_ACCOUNT, LIQUIDITY } from "../core/constants/address";
 import { getAnchorProgram } from "../core/constants/anchor";
 import { BN } from '@coral-xyz/anchor';
 import { numberWithCommas, calculateTokenAmount, MAX_SUPPLY } from '../utils/index';
@@ -17,7 +17,6 @@ import { BACKEND_URI } from "../core/constants";
 import axios from "axios";
 import { getMarketCap } from "../utils/index";
 import { toast } from 'react-toastify';
-
 
 const Trade = () => {
   const { connection } = useConnection()
@@ -113,6 +112,7 @@ const Trade = () => {
     if (!tokenMintPulicKey) {return};
     const payer = wallet.publicKey;
     const feeRecipient = new PublicKey(FEE_ACCOUNT);
+    const liquidity = new PublicKey(LIQUIDITY);
     const program = getAnchorProgram(connection, wallet, {commitment: 'confirmed'});
     const [config] = PublicKey.findProgramAddressSync(
       [
@@ -148,6 +148,7 @@ const Trade = () => {
       associtedBondingCurve,
       associtedUserTokenAccount,
       feeAccount: feeRecipient,
+      liquidity: liquidity,
       user: payer,
       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       tokenProgram: TOKEN_PROGRAM_ID,

@@ -21,6 +21,7 @@ const Create = () => {
   const [selectedFile, setSelectedFile] = useState(null)
   const [imageDataUrl, setImageDataUrl] = useState("");
 
+  const [isCreatingToken, setIsCreatingToken] = useState(false);
   // const { mutateAsync: uploadToPinataAsync, isPending: isUploading } =
   //   useUploadPinata()
 
@@ -40,7 +41,7 @@ const Create = () => {
 
 
   const createToken = async () => {
-    if (!wallet || !connection) {
+    if (!wallet || !connection || isCreatingToken) {
       toast.error("Please connect wallet first!")
       return
     }
@@ -48,6 +49,7 @@ const Create = () => {
       toast.error("Please input the correct information!")
       return
     };
+    setIsCreatingToken(true);
     let tokenUri = "";
     if (selectedFile) {
       try {
@@ -67,12 +69,14 @@ const Create = () => {
         const resInfo = await res.json();
         if (!resInfo.ok) {
           toast.error('Failed to upload image to IPFS');
+          setIsCreatingToken(false);
           return;
         }
         tokenUri = resInfo.uri;
       } catch (error) {
-        console.error('Error uploading to IPFS:', error)
-        toast.error('Failed to upload image to IPFS')
+        console.error('Error uploading to IPFS:', error);
+        toast.error('Failed to upload image to IPFS');
+        setIsCreatingToken(false);
         return;
       }
     }
@@ -115,29 +119,34 @@ const Create = () => {
       ],
       metaplexProgramId,
     )
-
-    const hash = await program.methods.createToken({
-      name: Buffer.from(tokenName),
-      symbol: Buffer.from(tokenSymbol),
-      uri: Buffer.from(tokenUri)
-    }).accounts({
-      payer,
-      tokenMint: tokenMintKP.publicKey,
-      bondingCurve,
-      associtedBondingCurve,
-      feeRecipient,
-      associtedFeeTokenAccount,
-      liquidity,
-      liquidityTokenAccount,
-      config,
-      metadata,
-      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-      tokenProgram: TOKEN_PROGRAM_ID,
-      tokenMetadataProgram: metaplexProgramId,
-      rent: SYSVAR_RENT_PUBKEY,
-      systemProgram: SystemProgram.programId
-    }).signers([tokenMintKP]).rpc();
-    toast.success(`Created ${tokenName} token Successfully!`)
+    try {
+      const hash = await program.methods.createToken({
+        name: Buffer.from(tokenName),
+        symbol: Buffer.from(tokenSymbol),
+        uri: Buffer.from(tokenUri)
+      }).accounts({
+        payer,
+        tokenMint: tokenMintKP.publicKey,
+        bondingCurve,
+        associtedBondingCurve,
+        feeRecipient,
+        associtedFeeTokenAccount,
+        liquidity,
+        liquidityTokenAccount,
+        config,
+        metadata,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        tokenMetadataProgram: metaplexProgramId,
+        rent: SYSVAR_RENT_PUBKEY,
+        systemProgram: SystemProgram.programId
+      }).signers([tokenMintKP]).rpc();
+      toast.success(`Created ${tokenName} coin Successfully!`);
+      setIsCreatingToken(false);
+    } catch {
+      toast.error(`Failed to create coin!`);
+      setIsCreatingToken(false);
+    }
   }
   return (
     <div className="container flex flex-col items-center px-4 pb-24 mx-auto">
@@ -168,7 +177,7 @@ const Create = () => {
         <div className="flex flex-col gap-2">
           <label htmlFor="thumbnail" className="font-bold">Image or Video</label>
             <div
-              className="relative min-h-[300px] w-full cursor-pointer bg-cover bg-no-repeat md:w-1/2"
+              className="relative min-h-[200px] w-full cursor-pointer bg-cover bg-no-repeat md:w-1/2"
               onClick={() => fileInputRef.current?.click()}
             >
             {imageDataUrl ? (
@@ -204,9 +213,12 @@ const Create = () => {
         <div className="flex justify-center">
           <button
             type="button"
-            className="flex items-center justify-center h-8 text-sm font-semibold text-black transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white w-80"
+            disabled={isCreatingToken}
+            className="flex items-center justify-center h-8 text-sm font-semibold text-black transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white w-80 disabled:opacity-30 disabled:cursor-normal"
             onClick={()=>createToken()}
-          >Create a new coin</button>
+          >
+            {isCreatingToken?"Creating a new coin":"Create a new coin"}
+          </button>
         </div>
       </form>
     </div>
