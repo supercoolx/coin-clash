@@ -7,7 +7,7 @@ import {
   TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
 } from '@solana/spl-token'
-import { FEE_ACCOUNT } from "../core/constants/address";
+import { FEE_ACCOUNT, LIQUIDITY } from "../core/constants/address";
 import { toast } from "react-toastify";
 import { BACKEND_URI } from "../core/constants";
 
@@ -88,13 +88,15 @@ const Create = () => {
       ],
       program.programId,
     )
-    const feeRecipient = new PublicKey(FEE_ACCOUNT);
     const associtedBondingCurve = getAssociatedTokenAddressSync(
       tokenMintKP.publicKey,
       bondingCurve,
       true,
     )
+    const feeRecipient = new PublicKey(FEE_ACCOUNT);
     const associtedFeeTokenAccount = getAssociatedTokenAddressSync(tokenMintKP.publicKey, feeRecipient)
+    const liquidity = new PublicKey(LIQUIDITY);
+    const liquidityTokenAccount = getAssociatedTokenAddressSync(tokenMintKP.publicKey, liquidity)
     const [config] = PublicKey.findProgramAddressSync(
       [
         Buffer.from('pumpfun_config'),
@@ -125,6 +127,8 @@ const Create = () => {
       associtedBondingCurve,
       feeRecipient,
       associtedFeeTokenAccount,
+      liquidity,
+      liquidityTokenAccount,
       config,
       metadata,
       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAccount } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
-import { SOLANA_MEMETRO_BONDING_PROGRAMID } from "./core/constants/address";
+import { SOLANA_COINKICK_PROGRAMID } from "./core/constants/address";
 import { getAssociatedTokenAddressSync } from '@solana/spl-token'
 import { getGlobalConnection } from "./utils";
 
@@ -12,7 +12,7 @@ export const useBondingCurveTokenAmount = (tokenMint) => {
       Buffer.from('pumpfun_bonding_curve'),
       tokenMintPulicKey.toBuffer(),
     ],
-    new PublicKey(SOLANA_MEMETRO_BONDING_PROGRAMID)
+    new PublicKey(SOLANA_COINKICK_PROGRAMID)
   )
   const associtedBondingCurve = getAssociatedTokenAddressSync(
     tokenMintPulicKey,
@@ -39,6 +39,6 @@ export const useQuoteSolanaTokenOut = (tokenMint, lamportsAmount) => {
       Buffer.from("pumpfun_bonding_curve"),
       mint.toBuffer()
     ],
-    new PublicKey(SOLANA_MEMETRO_BONDING_PROGRAMID)
+    new PublicKey(SOLANA_COINKICK_PROGRAMID)
   )
 }

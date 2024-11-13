@@ -1,6 +1,6 @@
 import { AnchorProvider, Program} from "@coral-xyz/anchor";
-import MemetroBondingIdl from "./idl/memetro_bonding.json";
-import { SOLANA_MEMETRO_BONDING_PROGRAMID } from "./address";
+import CoinkickIdl from "./idl/coinkick.json";
+import { SOLANA_COINKICK_PROGRAMID } from "./address";
 
 export function getAnchorProgram(
     connection,
@@ -8,6 +8,6 @@ export function getAnchorProgram(
     confirmOptions,
 ) {
     const provider = new AnchorProvider(connection, wallet, confirmOptions ?? { commitment: "confirmed"});
-    const program = new Program(MemetroBondingIdl, SOLANA_MEMETRO_BONDING_PROGRAMID, provider);
+    const program = new Program(CoinkickIdl, SOLANA_COINKICK_PROGRAMID, provider);
     return program;
 }

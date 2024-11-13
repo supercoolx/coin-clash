@@ -20,7 +20,7 @@ export const getGlobalConnection = () => {
 
 export const MAX_SUPPLY = 500_000_000_000_000_000;
 const K = 0.000000024;
-const INITIAL_PRICE = 5000;
+const INITIAL_PRICE = 25;
 export const calculateTokenAmount = (currentSupply, lamportsAmount, decimals) => {
   const exponent = (K * currentSupply) / (10 ** decimals)
   const exp1 = Math.exp(exponent)
