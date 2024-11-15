@@ -21,7 +21,7 @@ const configurationData = {
 
 export async function makeApiRequest(tokenMint: string) {
   try {
-      const url = new URL(`${BACKEND_URI}/dataseed/${tokenMint}`);
+      const url = new URL(`${BACKEND_URI}/tokens/dataseed/${tokenMint}`);
       const response = await fetch(url.toString());
       return response.json();
   } catch (error) {
@@ -113,7 +113,7 @@ export default class DataFeed implements IBasicDataFeed {
       onHistoryCallback(bars, { noData: false });
     } catch (error) {
         console.log('[getBars]: Get error', error);
-        await this.getBars(symbolInfo, resolution, periodParams, onHistoryCallback)
+        // await this.getBars(symbolInfo, resolution, periodParams, onHistoryCallback)
     }
   }
   subscribeBars(symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback) {
