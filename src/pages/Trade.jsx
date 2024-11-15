@@ -17,6 +17,7 @@ import { BACKEND_URI } from "../core/constants";
 import axios from "axios";
 import { getMarketCap } from "../utils/index";
 import { toast } from 'react-toastify';
+import { TVChartContainer } from '../components/TVChartContainer/index';
 
 const Trade = () => {
   const { connection } = useConnection()
@@ -63,38 +64,6 @@ const Trade = () => {
     fetchSolPrice();
     fetchToken();
   },[tokenMint])
-
-  useEffect(() => {
-    if (!window.TradingView) {
-      const script = document.createElement("script");
-      script.src = "https://s3.tradingview.com/tv.js";
-      script.async = true;
-      script.onload = createWidget;
-      document.body.appendChild(script);
-    } else {
-      createWidget();
-    }
-  }, []);
-
-  const createWidget = () => {
-    new window.TradingView.widget({
-      container_id: "tradingview_bnbusdt",
-      symbol: "BINANCE:BNBUSDT",
-      interval: "D",
-      theme: "dark",
-      style: "1",
-      locale: "en",
-      toolbar_bg: "#f1f3f6",
-      enable_publishing: false,
-      allow_symbol_change: true,
-      hide_side_toolbar: false,
-      details: true,
-      hotlist: true,
-      calendar: true,
-      width: "100%",
-      height: 600,
-    });
-  };
 
   const handleAmountChange = useCallback(value => {
     const regex = /^\d*\.?\d{0,8}$/
@@ -159,7 +128,9 @@ const Trade = () => {
   return (
     <div className="container mx-auto flex flex-col lg:flex-row gap-4 pb-[24px] mt-20 px-4">
       <div className="flex-1">
-        <div id="tradingview_bnbusdt" style={{ height: "600px", width: "100%" }} />
+        <div style={{ height: "600px", width: "100%" }}>
+          {tokenInfo && <TVChartContainer tokenInfo={tokenInfo}/>}
+        </div>
       </div>
       <div className="">
         <div className="p-4 pr-6 bg-dark-gray rounded-3xl">
