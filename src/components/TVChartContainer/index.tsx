@@ -23,6 +23,7 @@ export interface ChartContainerProps {
 	autosize: ChartingLibraryWidgetOptions['autosize']
 	studiesOverrides: ChartingLibraryWidgetOptions['studies_overrides']
 	container: ChartingLibraryWidgetOptions['container']
+	disabled_features: ChartingLibraryWidgetOptions['disabled_features']
 }
 
 const getLanguageFromURL = (): LanguageCode | null => {
@@ -37,12 +38,19 @@ export const TVChartContainer = ({tokenInfo}) => {
 
 	const defaultProps: Omit<ChartContainerProps, 'container'> = {
 		symbol: tokenInfo.symbol,
-		interval: '1' as ResolutionString,
+		interval: '5' as ResolutionString,
 		datafeedUrl: '',
 		libraryPath: '/charting_library/',
+		disabled_features: [
+			// 'header_widget',
+			// 'header_symbol_search',
+			'symbol_search_hot_key',
+			'use_localstorage_for_settings',
+			'popup_hints'
+		],
 		chartsStorageUrl: '',
 		chartsStorageApiVersion: '1.1',
-		clientId: 'tradingview.com',
+		clientId: '',
 		userId: 'public_user_id',
 		fullscreen: false,
 		autosize: true,
@@ -54,14 +62,14 @@ export const TVChartContainer = ({tokenInfo}) => {
 			symbol: defaultProps.symbol as string,
 			// BEWARE: no trailing slash is expected in feed URL
 			// tslint:disable-next-line:no-any
-			datafeed: Datafeed,
+			datafeed: new Datafeed(tokenInfo.mint),
 			interval: defaultProps.interval as ChartingLibraryWidgetOptions['interval'],
 			container: chartContainerRef.current,
 			library_path: defaultProps.libraryPath as string,
 
 			locale: getLanguageFromURL() || 'en',
-			disabled_features: ['use_localstorage_for_settings'],
-			enabled_features: ['study_templates'],
+			disabled_features: defaultProps.disabled_features,
+			// enabled_features: ['study_templates'],
 			charts_storage_url: defaultProps.chartsStorageUrl,
 			charts_storage_api_version: defaultProps.chartsStorageApiVersion,
 			client_id: defaultProps.clientId,
@@ -69,6 +77,7 @@ export const TVChartContainer = ({tokenInfo}) => {
 			fullscreen: defaultProps.fullscreen,
 			autosize: defaultProps.autosize,
 			studies_overrides: defaultProps.studiesOverrides,
+			theme: 'dark'
 		}
 
 		const tvWidget = new widget(widgetOptions)
@@ -92,7 +101,7 @@ export const TVChartContainer = ({tokenInfo}) => {
 		return () => {
 			tvWidget.remove()
 		}
-	})
+	},[tokenInfo])
 
 	return (
 		<div
