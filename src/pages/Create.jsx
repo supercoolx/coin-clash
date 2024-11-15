@@ -224,8 +224,7 @@ const Create = () => {
           title="Deposit"
         >
           <div className="flex-col justify-center items-center z-10 relative px-4">
-            <p className="font-medium text-sm text-white">Chosse how many [{tokenSymbol}] you want to buy</p>
-            <small className="font-medium text-xs text-white">tip: buying a small amount of coins helps protect your coin from snipers</small>
+            <p className="font-medium text-sm text-white">Choose how many [{tokenSymbol}] you want to buy</p>
             <div className="flex gap-2 p-1 mt-2 border border-white rounded-xl bg-slate-800">
               <div className="flex items-center flex-1 px-2">
                 <input
