@@ -1,4 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { BACKEND_URI } from '../core/constants'
+import axios from 'axios'
+import { Link } from 'react-router-dom'
+
 const Search = () => {
   const [searchStr, setSearchStr] = useState('')
   const [tokens, setTokens] = useState([])

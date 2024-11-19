@@ -1,38 +1,38 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react"
 import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react'
-import { useParams } from "react-router-dom";
-import { PublicKey, SystemProgram } from "@solana/web3.js";
+import { useParams } from "react-router-dom"
+import { PublicKey, SystemProgram } from "@solana/web3.js"
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
 } from '@solana/spl-token'
-import { FEE_ACCOUNT, LIQUIDITY } from "../core/constants/address";
-import { getAnchorProgram } from "../core/constants/anchor";
-import { BN } from '@coral-xyz/anchor';
-import { numberWithCommas, calculateTokenAmount, MAX_SUPPLY } from '../utils/index';
-import { useBondingCurveTokenAmount } from "../hooks";
+import { FEE_ACCOUNT, LIQUIDITY } from "../core/constants/address"
+import { getAnchorProgram } from "../core/constants/anchor"
+import { BN } from '@coral-xyz/anchor'
+import { numberWithCommas, calculateTokenAmount, MAX_SUPPLY } from '../utils/index'
+import { useBondingCurveTokenAmount } from "../hooks"
 
-import { BACKEND_URI } from "../core/constants";
-import axios from "axios";
-import { getMarketCap } from "../utils/index";
-import { toast } from 'react-toastify';
-import { TVChartContainer } from '../components/TVChartContainer/index';
+import { BACKEND_URI } from "../core/constants"
+import axios from "axios"
+import { getMarketCap } from "../utils/index"
+import { toast } from 'react-toastify'
+import { TVChartContainer } from '../components/TVChartContainer/index'
 
 const Trade = () => {
   const { connection } = useConnection()
   const wallet = useAnchorWallet()
-  const { tokenMint, rank } = useParams();
-  const [inputSol, setInputSol] = useState('');
-  const amountBondingCurve = useBondingCurveTokenAmount(tokenMint);
-  const [outputToken, setOutputToken] = useState(0);
+  const { tokenMint, rank } = useParams()
+  const [inputSol, setInputSol] = useState('')
+  const amountBondingCurve = useBondingCurveTokenAmount(tokenMint)
+  const [outputToken, setOutputToken] = useState(0)
 
-  const [tokenInfo, setTokenInfo] = useState();
-  const [solPrice , setSolPrice] = useState(0);
+  const [tokenInfo, setTokenInfo] = useState()
+  const [solPrice , setSolPrice] = useState(0)
 
   useEffect(() => {
-    const currentSupply = MAX_SUPPLY - (amountBondingCurve*1000000000);
-    const feeSol = ((inputSol??0) * 1000000000)/100;
+    const currentSupply = MAX_SUPPLY - (amountBondingCurve*1000000000)
+    const feeSol = ((inputSol??0) * 1000000000)/100
     setOutputToken(calculateTokenAmount(currentSupply, (inputSol??0)*1000000000 - feeSol,9))
   }, [inputSol, amountBondingCurve])
 
@@ -40,29 +40,29 @@ const Trade = () => {
     const fetchSolPrice = async () => {
       try {
         const apiURL = "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
-        const res = await axios.get(apiURL);
+        const res = await axios.get(apiURL)
         if (res && res.data) {
-          const solPrice = res.data.solana.usd;
-          setSolPrice(solPrice);
+          const solPrice = res.data.solana.usd
+          setSolPrice(solPrice)
         }
       }catch (e) {
-        console.error(e);
+        console.error(e)
       }
     }
     const fetchToken = async ()=>{
       try {
-        if (!tokenMint) return;
-        const apiURL = `${BACKEND_URI}/tokens/${tokenMint}`;
-        const res = await axios.get(apiURL);
+        if (!tokenMint) return
+        const apiURL = `${BACKEND_URI}/tokens/${tokenMint}`
+        const res = await axios.get(apiURL)
         if (res && res.data) {
-          setTokenInfo(res.data);
+          setTokenInfo(res.data)
         }
       } catch (e){
-        console.error(e);
+        console.error(e)
       }
     }
-    fetchSolPrice();
-    fetchToken();
+    fetchSolPrice()
+    fetchToken()
   },[tokenMint])
 
   const handleAmountChange = useCallback(value => {
@@ -73,22 +73,22 @@ const Trade = () => {
   }, [setInputSol])
 
   const buyToken = async () => {
-    const tokenMintPulicKey = new PublicKey(tokenMint);
+    const tokenMintPulicKey = new PublicKey(tokenMint)
     if (!wallet || !connection) {
       toast.error("Please connect wallet first!", {theme: "light"})
       return
     }
-    if (!tokenMintPulicKey) {return};
-    const payer = wallet.publicKey;
-    const feeRecipient = new PublicKey(FEE_ACCOUNT);
-    const liquidity = new PublicKey(LIQUIDITY);
-    const program = getAnchorProgram(connection, wallet, {commitment: 'confirmed'});
+    if (!tokenMintPulicKey) {return}
+    const payer = wallet.publicKey
+    const feeRecipient = new PublicKey(FEE_ACCOUNT)
+    const liquidity = new PublicKey(LIQUIDITY)
+    const program = getAnchorProgram(connection, wallet, {commitment: 'confirmed'})
     const [config] = PublicKey.findProgramAddressSync(
       [
         Buffer.from('pumpfun_config'),
       ],
       program.programId,
-    );
+    )
     const [bondingCurve] = PublicKey.findProgramAddressSync(
       [
         Buffer.from('pumpfun_bonding_curve'),
@@ -100,13 +100,13 @@ const Trade = () => {
       tokenMintPulicKey,
       bondingCurve,
       true,
-    );
+    )
 
     const associtedUserTokenAccount = getAssociatedTokenAddressSync(
       tokenMintPulicKey,
       payer,
-    );
-    const inputSolAmount = isNaN(Number(inputSol))?0:Number(inputSol);
+    )
+    const inputSolAmount = isNaN(Number(inputSol))?0:Number(inputSol)
     const hash = await program.methods.buyInSol(
       new BN(0),
       new BN(Number((inputSolAmount * 1000000000).toFixed(0)))
@@ -122,7 +122,7 @@ const Trade = () => {
       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       tokenProgram: TOKEN_PROGRAM_ID,
       systemProgram: SystemProgram.programId
-    }).signers([]).rpc();
+    }).signers([]).rpc()
     toast.success(`Buy ${tokenName} token Successfully!`)
   }
   return (
@@ -218,4 +218,4 @@ const Trade = () => {
   )
 }
 
-export default Trade;
+export default Trade
