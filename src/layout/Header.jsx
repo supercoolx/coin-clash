@@ -4,7 +4,6 @@ import {
   useWalletModal
 } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { shortenAddress } from "../utils";
 
 const Header = () => {
   const [modalOpened, setModalOpened] = useState(false);
@@ -44,12 +43,18 @@ const Header = () => {
               <button className="">Support</button>
             </div>
           </div>
-          <button
-            className="h-8 text-sm font-bold text-black transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white w-60"
-            onClick={()=>{connected?disconnect():setVisible(true)}}
-          >{
-            connected?shortenAddress(publicKey.toBase58()):"Connect wallet"
-          }</button>
+          {!connected && <button
+            className="h-8 text-sm font-bold text-black transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white px-4 "
+            onClick={()=>{setVisible(true)}}
+          >Connect wallet</button>}
+          {connected && (
+            <Link to="/walletinfo">
+              <button className="h-8 text-sm font-bold text-black transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white px-4">
+                My Wallet
+              </button>
+            </Link>
+          )}
+          {connected && <button onClick={disconnect} className="cursor-pointer"><img src="/imgs/disconnect.svg" alt="disconnect" className="ml-2 w-7 h-7" /></button>}
         </div>
         <img onClick={() => setMenuOpened(prev => !prev)} src="/imgs/menu.svg" alt="" className="relative block w-8 h-8 cursor-pointer lg:hidden z-[100]" />
       </div>
@@ -63,10 +68,10 @@ const Header = () => {
           <img src="/imgs/x.webp" alt="" className="w-10 h-10 rounded-full" />
           <img src="/imgs/telegram.webp" alt="" className="w-10 h-10 rounded-full" />
         </div>
-        <button 
+        <button
           className="h-8 text-sm font-bold text-black transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white w-60"
           onClick={()=>{connected?disconnect():setVisible(true)}}
-        >{connected?shortenAddress(publicKey.toBase58()):"Connect wallet"}</button>
+        >{connected?"My Wallet":"Connect wallet"}</button>
       </div>
 
       <div onClick={() => setModalOpened(prev => !prev)} className={`fixed inset-0 bg-black/50 flex items-center justify-center px-5 transition-all duration-500 ${modalOpened ? 'z-10 opacity-100' : '-z-10 opacity-0'}`}>
