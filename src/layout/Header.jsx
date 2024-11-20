@@ -1,29 +1,41 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import {
   useWalletModal
-} from "@solana/wallet-adapter-react-ui";
-import { useWallet } from "@solana/wallet-adapter-react";
+} from '@solana/wallet-adapter-react-ui'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const Header = () => {
-  const [modalOpened, setModalOpened] = useState(false);
-  const [menuOpened, setMenuOpened] = useState(false);
-  const { setVisible } = useWalletModal();
-  const { connected, publicKey, disconnect } = useWallet();
+  const [modalOpened, setModalOpened] = useState(false)
+  const [menuOpened, setMenuOpened] = useState(false)
+  const { setVisible } = useWalletModal()
+  const { connected, disconnect } = useWallet()
+  const [tokens, setTokens] = useState([])
+  useEffect(() => {
+    const fetchTokens = async () => {
+      try {
+        const apiURL = `${BACKEND_URI}/tokens/top2`
+        const res = await axios(apiURL)
+        setTokens(res.data)
+      }catch (e) {
+        console.error(e)
+      }
+    }
+    fetchTokens
+  })
+
 
   return (
     <header className="overflow-hidden">
       <div className="flex items-center w-full h-10 bg-black">
         <marquee behavior="" direction="">
           <div className="flex items-center gap-5">
-            <div className="flex items-center gap-2">
-              <img src="/imgs/logo.webp" alt="" className="rounded-full w-7 h-7" />
-              <div className="text-xl font-semibold">#1 Previous Winner</div>
+            {tokens.map((token, index) => (
+              <div className="flex items-center gap-2">
+              <img src={token.imageUri} alt="" className="rounded-full w-7 h-7" />
+              <div className="text-xl font-semibold">#{index+1} Previous Winner</div>
             </div>
-            <div className="flex items-center gap-2">
-              <img src="/imgs/logo.webp" alt="" className="rounded-full w-7 h-7" />
-              <div className="text-xl font-semibold">#1 Previous Winner</div>
-            </div>
+            ))}
           </div>
         </marquee>
       </div>
@@ -35,7 +47,7 @@ const Header = () => {
         <div className="items-center justify-between flex-1 hidden lg:flex">
           <div className="flex items-center flex-1 gap-10">
             <div className="flex items-center gap-2">
-              <img src="/imgs/x.webp" alt="" className="rounded-full" />
+              <a href="https://x.com/Coinkickfun"><img src="/imgs/x.webp" alt="" className="rounded-full" /></a>
               <img src="/imgs/telegram.webp" alt="" className="rounded-full" />
             </div>
             <div className="flex items-center gap-16 text-lg font-bold">
@@ -44,12 +56,12 @@ const Header = () => {
             </div>
           </div>
           {!connected && <button
-            className="h-8 text-sm font-bold text-black transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white px-4 "
+            className="h-8 text-sm font-bold text-[#131722] transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white w-[200px] "
             onClick={()=>{setVisible(true)}}
           >Connect wallet</button>}
           {connected && (
             <Link to="/walletinfo">
-              <button className="h-8 text-sm font-bold text-black transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white px-4">
+              <button className="h-8 text-sm font-bold text-[#131722] transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white w-[200px]">
                 My Wallet
               </button>
             </Link>
@@ -69,7 +81,7 @@ const Header = () => {
           <img src="/imgs/telegram.webp" alt="" className="w-10 h-10 rounded-full" />
         </div>
         <button
-          className="h-8 text-sm font-bold text-black transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white w-60"
+          className="h-8 text-sm font-bold text-[#131722] transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white w-60"
           onClick={()=>{connected?disconnect():setVisible(true)}}
         >{connected?"My Wallet":"Connect wallet"}</button>
       </div>
@@ -91,4 +103,4 @@ const Header = () => {
   )
 }
 
-export default Header;
+export default Header

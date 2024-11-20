@@ -31,6 +31,10 @@ const Trade = () => {
   const [solPrice , setSolPrice] = useState(0)
 
   useEffect(() => {
+    document.title = `${tokenInfo?.symbol} | CoinKick`
+  }, [tokenInfo])
+
+  useEffect(() => {
     const currentSupply = MAX_SUPPLY - (amountBondingCurve*1000000000)
     const feeSol = ((inputSol??0) * 1000000000)/100
     setOutputToken(calculateTokenAmount(currentSupply, (inputSol??0)*1000000000 - feeSol,9))

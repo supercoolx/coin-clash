@@ -43,3 +43,19 @@ export const getMarketCap = (solAmount, soldTokenAmount, solPrice) => {
     return marketCap.toFixed(2);
   }
 }
+
+//current price token in sol
+// solAmount: lamport
+// soldTokenAmount: withDecimal (9)
+export const getTokenPriceInSolPerOne = (solAmount, soldTokenAmount) => {
+  return (Number(solAmount)/ Number(soldTokenAmount)).toFixed(9)
+}
+
+export const getTokenPriceInSol = (solAmount, soldTokenAmount, buyerAmount) => {
+  return (Number(solAmount) * Number(buyerAmount)/ (Number(soldTokenAmount) * 1000000000)).toFixed(9)
+}
+
+export const getPercent = (solAmount, soldTokenAmount, buyerAmount) => {
+  const a = getTokenPriceInSol(solAmount, soldTokenAmount, buyerAmount)
+  return Number(a)*100/(Number(solAmount)/1000000000)
+}

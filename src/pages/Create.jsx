@@ -25,13 +25,19 @@ const Create = () => {
   const [selectedFile, setSelectedFile] = useState(null)
   const [imageDataUrl, setImageDataUrl] = useState("");
 
+  const [telegram, setTelegram] = useState("");
+  const [website, setWebsite] = useState("");
+  const [twitter, setTwitter] = useState("");
+
   const [isCreatingToken, setIsCreatingToken] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [firstBuyAmount, setFirstBuyAmount] = useState(0.05);
   const [calculatedOutputToken, setCalculatedOutputToken] = useState(0);
   // const { mutateAsync: uploadToPinataAsync, isPending: isUploading } =
   //   useUploadPinata()
-
+  useEffect(() => {
+    document.title = 'Create a coin | CoinKick'
+  }, [])
   useEffect(() => {
     const currentSupply = MAX_SUPPLY * 1/100;
     const feeSol = ((firstBuyAmount??0) * 1000000000)/100;
@@ -85,6 +91,9 @@ const Create = () => {
         data.append('tokenName', tokenName)
         data.append('tokenSymbol', tokenSymbol)
         data.append('tokenDesc', tokenDesc)
+        data.append('tokenTelegram', telegram)
+        data.append('tokenTwitter', twitter)
+        data.append('tokenWebsite', website)
         const res = await fetch(
           `${BACKEND_URI}/tokens/ipfs`,
           {
@@ -284,7 +293,7 @@ const Create = () => {
         <div className="flex flex-col gap-2">
           <label htmlFor="thumbnail" className="font-bold">Image or Video</label>
             <div
-              className="relative min-h-[200px] w-full cursor-pointer bg-cover bg-no-repeat md:w-1/2"
+              className="relative min-h-[200px] w-full cursor-pointer bg-cover bg-no-repeat md:w-1/2 border border-white rounded-lg"
               onClick={() => fileInputRef.current?.click()}
             >
             {imageDataUrl ? (
@@ -307,6 +316,33 @@ const Create = () => {
               onChange={handleImageUpload}
             />
           </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="telegram" className="font-bold">Telegram</label>
+          <input
+            type="text" name="name" id="telegram" className="w-full px-2 py-2 border border-white rounded-lg outline-none bg-slate-800"
+            placeholder="(optional)"
+            value={telegram}
+            onChange={(e) => setTelegram(e.target.value)}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="twitter" className="font-bold">Twitter</label>
+          <input
+            type="text" name="name" id="twitter" className="w-full px-2 py-2 border border-white rounded-lg outline-none bg-slate-800"
+            placeholder="(optional)"
+            value={twitter}
+            onChange={(e) => setTwitter(e.target.value)}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="website" className="font-bold">Website</label>
+          <input
+            type="text" name="name" id="website" className="w-full px-2 py-2 border border-white rounded-lg outline-none bg-slate-800"
+            placeholder="(optional)"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+          />
         </div>
         <div className="p-4 pr-6 bg-dark-gray rounded-3xl">
           <div className="flex gap-4">
