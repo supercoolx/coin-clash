@@ -4,7 +4,8 @@ import {
   useWalletModal
 } from '@solana/wallet-adapter-react-ui'
 import { useWallet } from '@solana/wallet-adapter-react'
-
+import { BACKEND_URI } from '../core/constants'
+import axios from 'axios'
 const Header = () => {
   const [modalOpened, setModalOpened] = useState(false)
   const [menuOpened, setMenuOpened] = useState(false)
@@ -21,8 +22,11 @@ const Header = () => {
         console.error(e)
       }
     }
-    fetchTokens()
-  })
+    const interval = setInterval(()=>{
+      fetchTokens()
+    }, 15000) //every 15 seconds
+    return () => clearInterval(interval)
+  }, [])
 
 
   return (
