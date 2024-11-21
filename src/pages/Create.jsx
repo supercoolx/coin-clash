@@ -202,11 +202,9 @@ const Create = () => {
       transaction.add(createTokenIns);
       transaction.add(buyIns);
       const hash = await program.provider.sendAndConfirm(transaction, [tokenMintKP]);
-      console.log('---hash:', hash)
       toast.success(`Created ${tokenName} coin Successfully!`);
       setIsCreatingToken(false);
     } catch (e) {
-      console.log('----e:', e);
       toast.error(`Failed to create coin!`);
       setIsCreatingToken(false);
     }

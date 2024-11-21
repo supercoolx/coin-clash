@@ -35,7 +35,7 @@ const Header = () => {
         <marquee behavior="" direction="">
           <div className="flex items-center gap-5">
             {tokens.map((token, index) => (
-              <div className="flex items-center gap-2">
+              <div key={`token-${index}`} className="flex items-center gap-2">
               <img src={token.imageUri} alt="" className="rounded-full w-7 h-7" />
               <div className="text-xl font-semibold">#{index+1} Previous Winner</div>
             </div>
@@ -60,7 +60,7 @@ const Header = () => {
             </div>
           </div>
           {!connected && <button
-            className="h-8 text-sm font-bold text-[#131722] transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white w-[200px] "
+            className="h-8 text-sm font-bold text-[#131722] transition-all duration-300 rounded-full bg-primary hover:opacity-80 w-[200px] "
             onClick={()=>{setVisible(true)}}
           >Connect wallet</button>}
           {connected && (

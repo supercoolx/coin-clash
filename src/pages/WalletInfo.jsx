@@ -62,7 +62,7 @@ const WalletInfo = () => {
               </div>
               <div className="flex justify-between">
                 <div className="font-semibold text-neutral-500">{getTokenPriceInSolPerOne(token.tokenInfo.solAmount, token.tokenInfo.soldTokenAmount)} SOL</div>
-                <div className="font-semibold"><span className="text-primary">+ {getPercent(token.tokenInfo.solAmount, token.tokenInfo.soldTokenAmount, token.tokenAmount)} %</span></div>
+                <div className="font-semibold"><span className="text-primary">{getPercent(token.tokenInfo.solAmount, token.tokenInfo.soldTokenAmount, token.tokenAmount)} %</span></div>
               </div>
             </div>
           </div>

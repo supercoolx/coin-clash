@@ -12,7 +12,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="/create" element={<Create />} />
-          <Route path="/trade/:tokenMint/:rank" element={<Trade />} />
+          <Route path="/trade/:tokenMint" element={<Trade />} />
           <Route path="/walletinfo" element={<WalletInfo />} />
         </Route>
       </Routes>
