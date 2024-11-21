@@ -21,7 +21,7 @@ const Header = () => {
         console.error(e)
       }
     }
-    fetchTokens
+    fetchTokens()
   })
 
 
