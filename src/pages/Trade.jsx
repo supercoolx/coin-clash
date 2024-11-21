@@ -28,6 +28,7 @@ const Trade = () => {
   const [outputToken, setOutputToken] = useState(0)
 
   const [tokenInfo, setTokenInfo] = useState()
+  const [tokenSocialInfo, setTokenSocialInfo] = useState()
   const [solPrice , setSolPrice] = useState(0)
 
   useEffect(() => {
@@ -60,6 +61,27 @@ const Trade = () => {
         const res = await axios.get(apiURL)
         if (res && res.data) {
           setTokenInfo(res.data)
+          const tokenUri = res.data.uri;
+          const res1 = await axios.get(tokenUri)
+          if (res1 && res1.data) {
+            let telegram = res1.data.telegram??''
+            if (telegram && telegram.substring(0,8) !=='https://'){
+              telegram = `https://${telegram}`
+            }
+            let twitter = res1.data.twitter??''
+            if (twitter && twitter.substring(0,8) !=='https://'){
+              twitter = `https://${twitter}`
+            }
+            let website = res1.data.website??''
+            if (website && website.substring(0,8) !=='https://'){
+              website = `https://${website}`
+            }
+            setTokenSocialInfo({
+              telegram,
+              twitter,
+              website
+            })
+          }
         }
       } catch (e){
         console.error(e)
@@ -147,12 +169,8 @@ const Trade = () => {
             <div className="ml-8 font-bold text-primary">#{rank}</div>
           </div>
         </div>
-        <div className="flex items-center justify-between px-4 py-2 mt-2 font-bold rounded-full bg-dark-gray">
+        <div className="flex items-center justify-end px-4 py-2 mt-2 font-bold rounded-full bg-dark-gray">
           <div className="text-primary">market cap: {tokenInfo?getMarketCap(tokenInfo.solAmount, tokenInfo.soldTokenAmount, solPrice):0}</div>
-          <div className="flex items-center gap-1">
-            <img src="/imgs/user.svg" alt="" className="w-4 h-4" />
-            <span>12.508</span>
-          </div>
         </div>
         <div className="p-5 mt-2 font-bold bg-dark-gray rounded-3xl">
           <div className="text-neutral-500">{numberWithCommas(amountBondingCurve)} {tokenInfo?tokenInfo.symbol:''} Remaining</div>
@@ -197,8 +215,8 @@ const Trade = () => {
           >Buy</button>
         </div>
         <div className="flex items-center justify-center gap-2 mt-5">
-          <img src="/imgs/x.webp" alt="" className="" />
-          <img src="/imgs/telegram.webp" alt="" className="" />
+          {tokenSocialInfo && tokenSocialInfo.twitter && <a href={tokenSocialInfo.twitter}><img src="/imgs/x.webp" alt="" className="" /></a>}
+          {tokenSocialInfo && tokenSocialInfo.telegram && <a href={tokenSocialInfo.telegram}><img src="/imgs/telegram.webp" alt="" className="" /></a>}
         </div>
         <div className="mt-5 font-bold">
           <div className="text-lg text-neutral-500">Token Distribution</div>

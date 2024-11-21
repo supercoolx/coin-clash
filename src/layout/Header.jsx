@@ -65,7 +65,7 @@ const Header = () => {
           >Connect wallet</button>}
           {connected && (
             <Link to="/walletinfo">
-              <button className="h-8 text-sm font-bold text-[#131722] transition-all duration-300 rounded-full bg-primary hover:bg-secondary hover:text-white w-[200px]">
+              <button className="h-8 text-sm font-bold text-[#131722] rounded-full bg-primary hover:opacity-80 w-[200px]">
                 My Wallet
               </button>
             </Link>

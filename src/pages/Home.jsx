@@ -32,24 +32,24 @@ const Home = () => {
   const [modalOpened, setModalOpened] = useState(false)
   const [filter, setFilter] = useState(0)
   const [pageSize, setPageSize] = useState(0)
-  const [totalAmount, setTotalAmount]= useState(0)
+  const [kickAmount, setKickAmount]= useState(0)
 
   useEffect(() => {
     document.title = 'CoinKick'
   }, [])
 
   useEffect(()=> {
-    const fetchTotalAmount = async () => {
+    const fetchKickAmount = async () => {
       try {
-        const apiURL = `${BACKEND_URI}/tokens/total_amount`
+        const apiURL = `${BACKEND_URI}/tokens/kick_amount`
         const res = await axios(apiURL)
-        setTotalAmount(Number(res.data)) // sol amount
+        setKickAmount(Number(res.data)) // sol amount
       } catch(e) {
-        setTotalAmount(0)
+        setKickAmount(0)
       }
     }
     const interval = setInterval(()=>{
-      fetchTotalAmount()
+      fetchKickAmount()
     }, 8000) //every 8 seconds
     return () => clearInterval(interval)
   },[])
@@ -103,14 +103,14 @@ const Home = () => {
         <div className="mt-8 text-3xl font-bold text-center">Time until Kick</div>
         <Countdown date={date} renderer={Renderer} />
         <div className="flex items-center justify-center border-y border-[#6e6e6e] w-full py-4">
-          <div className="text-2xl font-semibold text-center">${numberWithCommas((Math.floor(totalAmount/1000000000) * solPrice))} in Kick pool</div>
+          <div className="text-2xl font-semibold text-center">${numberWithCommas((Math.floor(kickAmount/1000000000) * solPrice))} in Kick pool</div>
           <img onClick={() => setModalOpened(true)} src="/imgs/info.svg" alt="info" className="ml-5 w-[30px] h-[27px] cursor-pointer"/>
         </div>
       </div>
       <div className="flex justify-center">
         <Link
           to="/create"
-          className="flex items-center justify-center mt-4 text-sm font-semibold text-black transition-all duration-300 rounded-full bg-primary h-7 hover:bg-secondary hover:text-white w-72 h-[34px]"
+          className="flex items-center justify-center mt-4 text-sm font-semibold text-black rounded-full bg-primary h-7 hover:opacity-80 w-72 h-[34px]"
         >
           Create a new coin
         </Link>
@@ -120,19 +120,19 @@ const Home = () => {
           <div className="font-bold">Filter on:</div>
           <div className="flex flex-wrap gap-4">
             <button
-              className={`rounded-full border-2 h-8 w-48 bg-dark-gray font-bold text-sm ${filter === 0 ?'border-primary':'border-transparent'} hover:bg-secondary hover:border-secondary transition-all duration-200 ease-in-out`}
+              className={`rounded-full border-2 h-8 w-48 bg-dark-gray font-bold text-sm ${filter === 0 ?'border-primary':'border-transparent'} hover:bg-primary/30 transition-all duration-200 ease-in-out`}
               onClick={()=>setFilter(0)}
             >
               Leaderboard
             </button>
             <button
-              className={`rounded-full border-2 h-8 w-48 bg-dark-gray font-bold text-sm ${filter === 1 ?'border-primary':'border-transparent'} hover:bg-secondary hover:border-secondary transition-all duration-200 ease-in-out`}
+              className={`rounded-full border-2 h-8 w-48 bg-dark-gray font-bold text-sm ${filter === 1 ?'border-primary':'border-transparent'} hover:bg-primary/30 transition-all duration-200 ease-in-out`}
               onClick={()=>setFilter(1)}
             >
               Creation Time
             </button>
             <button
-              className={`rounded-full border-2 h-8 w-48 bg-dark-gray font-bold text-sm ${filter === 2 ?'border-primary':'border-transparent'} hover:bg-secondary hover:border-secondary transition-all duration-200 ease-in-out`}
+              className={`rounded-full border-2 h-8 w-48 bg-dark-gray font-bold text-sm ${filter === 2 ?'border-primary':'border-transparent'} hover:bg-primary/30  transition-all duration-200 ease-in-out`}
               onClick={()=>setFilter(2)}
             >
               Top 10
