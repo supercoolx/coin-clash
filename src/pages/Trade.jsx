@@ -276,7 +276,9 @@ const Trade = () => {
           <div className="mt-5 font-bold">
             <div className="text-lg text-neutral-500">Token Distribution</div>
             <div className="mt-2">
-              {holders.map((holder, index) => (
+              {holders.filter(holder => {
+                return Number(holder.amount) > 0
+              }).map((holder, index) => (
               <div key={`holder-${index}`} className="flex justify-between">
                 <div className="text-neutral-500">{index+1}. {holder.address === liquidityAddr ?'Liquidity':holder.address === priceCurveAddr ? 'Price Curve':holder.address.substring(0,6)}</div>
                 <div className="text-neutral-500">{Number((Number(holder.amount)/10000000000000000).toFixed(2))}%</div>
