@@ -59,7 +59,7 @@ export const getTokenPriceInSol = (solAmount, soldTokenAmount, buyerAmount) => {
   return ((Number(solAmount) * Number(buyerAmount)/ (Number(soldTokenAmount) * 1000000000)).toFixed(9)).replace(/\.?0+$/,'')
 }
 
-export const getPercent = (solAmount, soldTokenAmount, buyerAmount) => {
+export const getPercent = (solAmount, soldTokenAmount, buyerAmount, buyerSolAmount) => {
   const a = getTokenPriceInSol(solAmount, soldTokenAmount, buyerAmount)
-  return Number(a - solAmount/1000000000)*100/(Number(solAmount/1000000000))
+  return Number((Number(a - buyerSolAmount/1000000000)*100/(Number(buyerSolAmount/1000000000))).toFixed(2))
 }

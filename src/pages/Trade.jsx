@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useMemo } from "react"
 import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react'
 import { useParams } from "react-router-dom"
 import { PublicKey, SystemProgram } from "@solana/web3.js"
@@ -9,7 +9,7 @@ import {
 
 } from '@solana/spl-token'
 
-import { FEE_ACCOUNT, LIQUIDITY } from "../core/constants/address"
+import { FEE_ACCOUNT, LIQUIDITY, SOLANA_COINKICK_PROGRAMID } from "../core/constants/address"
 import { getAnchorProgram } from "../core/constants/anchor"
 import { BN } from '@coral-xyz/anchor'
 import { numberWithCommas, calculateTokenAmount, MAX_SUPPLY } from '../utils/index'
@@ -45,6 +45,30 @@ const Trade = () => {
     setOutputToken(calculateTokenAmount(currentSupply, (inputSol??0)*1000000000 - feeSol,9))
   }, [inputSol, amountBondingCurve])
 
+  const liquidityAddr = useMemo(() => {
+    try{
+      const liquidity = new PublicKey(LIQUIDITY)
+      const tokenMintPublicKey = new PublicKey(tokenMint)
+      return getAssociatedTokenAddressSync(tokenMintPublicKey, liquidity, true).toBase58()
+    }catch {
+      return ""
+    }
+  },[tokenMint])
+  const priceCurveAddr = useMemo(() => {
+    try {
+      const tokenMintPublicKey = new PublicKey(tokenMint)
+      const [bondingCurve] = PublicKey.findProgramAddressSync(
+        [
+          Buffer.from('pumpfun_bonding_curve'),
+          tokenMintPublicKey.toBuffer(),
+        ],
+        new PublicKey(SOLANA_COINKICK_PROGRAMID),
+      )
+      return getAssociatedTokenAddressSync(tokenMintPublicKey, bondingCurve, true).toBase58()
+    } catch {
+      return ""
+    }
+  }, [tokenMint])
   useEffect(()=>{
     if (!tokenMint) return;
     const fetchTokenLargestAccounts = async () => {
@@ -247,13 +271,14 @@ const Trade = () => {
           <div className="flex items-center justify-center gap-2 mt-5">
             {tokenInfo && tokenInfo.twitter && <a href={tokenInfo.twitter.substring(0,8) !=='https://'?`https://${tokenInfo.twitter}`:tokenInfo.twitter}><img src="/imgs/x.webp" alt="" className="" /></a>}
             {tokenInfo && tokenInfo.telegram && <a href={tokenInfo.telegram.substring(0,8)!=='https://'?`https://${tokenInfo.telegram}`:tokenInfo.telegram}><img src="/imgs/telegram.webp" alt="" className="" /></a>}
+            {tokenInfo && tokenInfo.website && <a href={tokenInfo.website.substring(0,8)!=='https://'?`https://${tokenInfo.website}`:tokenInfo.website}><img src="/imgs/website.svg" alt="" className="w-[26px] h-[26px]" /></a>}
           </div>
           <div className="mt-5 font-bold">
             <div className="text-lg text-neutral-500">Token Distribution</div>
             <div className="mt-2">
               {holders.map((holder, index) => (
               <div key={`holder-${index}`} className="flex justify-between">
-                <div className="text-neutral-500">{index+1}. {index == 0?'Liquidity':holder.address.substring(0,6)}</div>
+                <div className="text-neutral-500">{index+1}. {holder.address === liquidityAddr ?'Liquidity':holder.address === priceCurveAddr ? 'Price Curve':holder.address.substring(0,6)}</div>
                 <div className="text-neutral-500">{Number((Number(holder.amount)/10000000000000000).toFixed(2))}%</div>
               </div>
               ))}

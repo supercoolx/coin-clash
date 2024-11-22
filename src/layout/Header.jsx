@@ -46,7 +46,7 @@ const Header = () => {
       <div className="container flex justify-between gap-10 px-4 py-4 mx-auto sm:flex-row">
         <Link to="/" className="flex items-center gap-2">
         <img src="/imgs/lightning.webp" alt="" className="transition-all duration-300 rotate-180 hover:rotate-0" />
-        <div className="text-3xl font-bold">CoinClash<span className="text-primary">.fun</span></div>
+        <div className="text-3xl font-bold">CoinKick<span className="text-primary">.fun</span></div>
         </Link>
         <div className="items-center justify-between flex-1 hidden lg:flex">
           <div className="flex items-center flex-1 gap-10">
