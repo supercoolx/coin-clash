@@ -4,6 +4,7 @@ import Countdown from "react-countdown";
 import { BACKEND_URI } from "../core/constants";
 import axios from "axios";
 import { getMarketCap, numberWithCommas } from "../utils";
+import { socket } from "../hooks";
 
 const Renderer = (props) => {
   return (
@@ -34,6 +35,20 @@ const Home = () => {
   const [pageSize, setPageSize] = useState(0)
   const [kickAmount, setKickAmount]= useState(0)
 
+  useEffect(()=> {
+    socket.on('connect', ()=>{
+    })
+    socket.on('disconnect', ()=>{
+    })
+    socket.on('created_token', (value) => {
+        setTokens(value)
+    })
+    return () => {
+      socket.off('connect')
+      socket.off('disconnect')
+      socket.off('created_token')
+    }
+  },[setTokens])
   useEffect(() => {
     document.title = 'CoinKick'
   }, [])
