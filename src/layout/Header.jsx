@@ -33,11 +33,11 @@ const Header = () => {
     <header className="overflow-hidden">
       <div className="flex items-center w-full h-10 bg-black">
         <div className="flex items-center gap-5 ml-[10px]">
-          {buyToken && <div className="flex items-center gap-2">
+          {buyToken && <div className="flex items-center gap-2 rounded-[4px] bg-[#ffff00] px-2">
             <div className="text-sm">{buyToken.buyer.substring(0,5)} bought {(buyToken.sol_amount/1000000000).toFixed(4)}SOL of {buyToken.symbol}</div>
-            <img src={buyToken.image_uri} alt="TokenImage" className="ml-2 rounded-full w-7 h-7" />
+            <img src={buyToken.image_url} alt="TokenImage" className="ml-2 rounded-full w-7 h-7" />
           </div>}
-          {createdToken && <div className="flex items-center gap-2">
+          {createdToken && <div className="flex items-center gap-2 rounded-[4px] bg-[#93c5fd] text-black px-2">
             <div className="text-sm">{createdToken.creator.substring(0,5)} created {createdToken.symbol}</div>
             <img src={createdToken.image_uri} alt="TokenImage" className="rounded-full w-7 h-7 ml-2" />
           </div>
