@@ -43,6 +43,7 @@ const Home = () => {
     socket.on('created_token', (value) => {
         setTokens(value)
     })
+
     return () => {
       socket.off('connect')
       socket.off('disconnect')

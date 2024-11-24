@@ -4,44 +4,45 @@ import {
   useWalletModal
 } from '@solana/wallet-adapter-react-ui'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { BACKEND_URI } from '../core/constants'
-import axios from 'axios'
+// import { BACKEND_URI } from '../core/constants'
+// import axios from 'axios'
+import { socket } from "../hooks";
+
 const Header = () => {
   const [modalOpened, setModalOpened] = useState(false)
   const [menuOpened, setMenuOpened] = useState(false)
   const { setVisible } = useWalletModal()
   const { connected, disconnect } = useWallet()
-  const [tokens, setTokens] = useState([])
+  // const [tokens, setTokens] = useState([])
+  const [createdToken, setCreatedToken] = useState()
+  const [buyToken, setBuyToken] = useState()
   useEffect(() => {
-    const fetchTokens = async () => {
-      try {
-        const apiURL = `${BACKEND_URI}/tokens/top2`
-        const res = await axios(apiURL)
-        setTokens(res.data)
-      }catch (e) {
-        console.error(e)
-      }
+    socket.on('created_token_info', (value) => {
+      setCreatedToken(value)
+    })
+    socket.on('buy_token', (value) => {
+      setBuyToken(value)
+    })
+    return () => {
+      socket.off('created_token_info')
+      socket.off('buy_token')
     }
-    const interval = setInterval(()=>{
-      fetchTokens()
-    }, 15000) //every 15 seconds
-    return () => clearInterval(interval)
-  }, [])
-
+  },[])
 
   return (
     <header className="overflow-hidden">
       <div className="flex items-center w-full h-10 bg-black">
-        <marquee behavior="" direction="">
-          <div className="flex items-center gap-5">
-            {tokens.map((token, index) => (
-              <div key={`token-${index}`} className="flex items-center gap-2">
-              <img src={token.imageUri} alt="" className="rounded-full w-7 h-7" />
-              <div className="text-xl font-semibold">#{index+1} Previous Winner</div>
-            </div>
-            ))}
+        <div className="flex items-center gap-5 ml-[10px]">
+          {buyToken && <div className="flex items-center gap-2">
+            <div className="text-sm">{buyToken.buyer.substring(0,5)} bought {(buyToken.sol_amount/1000000000).toFixed(4)}SOL of {buyToken.symbol}</div>
+            <img src={buyToken.image_uri} alt="TokenImage" className="ml-2 rounded-full w-7 h-7" />
+          </div>}
+          {createdToken && <div className="flex items-center gap-2">
+            <div className="text-sm">{createdToken.creator.substring(0,5)} created {createdToken.symbol}</div>
+            <img src={createdToken.image_uri} alt="TokenImage" className="rounded-full w-7 h-7 ml-2" />
           </div>
-        </marquee>
+          }
+        </div>
       </div>
       <div className="container flex justify-between gap-10 px-4 py-4 mx-auto sm:flex-row">
         <Link to="/" className="flex items-center gap-2">
