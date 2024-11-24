@@ -1,5 +1,6 @@
 import { HistoryCallback, IBasicDataFeed, LibrarySymbolInfo, PeriodParams, ResolutionString, ResolveCallback } from "../../charting_library/charting_library";
 import { BACKEND_URI } from "../../core/constants";
+import { socket } from "../../hooks";
 
 const configurationData = {
   // Represents the resolutions for bars supported by your datafeed
@@ -19,9 +20,9 @@ const configurationData = {
   // symbols_types: []
 };
 
-export async function makeApiRequest(tokenMint: string) {
+export async function makeApiRequest(tokenMint: string, resolution: string, from: number, to: number) {
   try {
-      const url = new URL(`${BACKEND_URI}/tokens/dataseed/${tokenMint}`);
+      const url = new URL(`${BACKEND_URI}/tokens/dataseed/${tokenMint}?resolution=${resolution}&from=${from}&to=${to}`);
       const response = await fetch(url.toString());
       return response.json();
   } catch (error) {
@@ -83,14 +84,14 @@ export default class DataFeed implements IBasicDataFeed {
   ) {
     try {
       const { from, to } = periodParams;
-      console.log('[getBars]: Method call', symbolInfo.name, resolution, from, to);
+      console.log('[getBars]: Method call', symbolInfo, resolution, from, to);
 
       if (to === 0){
         onHistoryCallback([], {noData: true})
         return
       }
 
-      const data = await makeApiRequest(this.tokenMint);
+      const data = await makeApiRequest(this.tokenMint, resolution, from, to,);
       if (!data ||  data.length === 0) {
           // "noData" should be set if there is no data in the requested period
           onHistoryCallback([], { noData: true });
@@ -118,8 +119,21 @@ export default class DataFeed implements IBasicDataFeed {
   }
   subscribeBars(symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback) {
       console.log('[subscribeBars]: Method call with subscriberUID:', subscriberUID);
+      socket.on('chart_data', value => {
+        if (value.mint === this.tokenMint){
+          const bar = {
+            time: value.time,
+            open: value.open,
+            high: value.high,
+            low: value.low,
+            close: value.close
+          }
+          onRealtimeCallback(bar)
+        }
+      })
   }
   unsubscribeBars(subscriberUID) {
-      console.log('[unsubscribeBars]: Method call with subscriberUID:', subscriberUID);
+    console.log('[unsubscribeBars]: Method call with subscriberUID:', subscriberUID);
+    socket.off('chart_data')
   }
 }
